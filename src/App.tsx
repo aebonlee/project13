@@ -93,6 +93,15 @@ const M: Meta = {
   ],
   deploy:
     'Vite 빌드(base: "./") 후 GitHub Actions(deploy.yml)가 main push 시 GitHub Pages로 자동 배포 → aebonlee.github.io/project13/',
+  scope: {
+    include: ['JD·이력 입력 → 적합도·보유/부족 역량·갭·맞춤 불릿', '진단 저장·비교·클립보드 복사', 'AI 진단 + 키 없을 때 키워드 교집합 폴백'],
+    exclude: ['실제 지원·ATS 연동', '이력서 자동 완성·디자인', '채용 공고 크롤링'],
+  },
+  pitch: [
+    '"이 공고에 맞춘 지원"을 돕는 적합도 진단',
+    'ATS·키워드 관점으로 통과율을 높이는 실전성',
+    '키 없이도 토큰 교집합으로 근사 동작',
+  ],
   stack: ['React 18', 'TypeScript', 'Vite', 'OpenAI GPT', 'Clipboard API', 'localStorage'],
   links: [
     { label: '워크넷', url: 'https://www.work.go.kr' },
