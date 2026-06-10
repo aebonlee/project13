@@ -47,6 +47,52 @@ const M: Meta = {
     { title: '클립보드 활용', body: '맞춤 불릿을 클릭 한 번으로 복사해 이력서에 즉시 반영하게 합니다.' },
     { title: '정적·오프라인', body: '진단 이력은 localStorage에 저장, 백엔드 없이 GitHub Pages에서 완결됩니다.' },
   ],
+  targets: ['특정 공고에 맞춰 지원하려는 구직자', '이력서를 JD에 최적화하려는 사람', 'ATS 통과율을 높이려는 지원자'],
+  goals: [
+    'JD와 내 역량을 대조해 적합도를 진단한다',
+    '보유/부족 역량과 갭 채우기·맞춤 문장을 제공한다',
+    'API 키가 없어도 키워드 교집합 휴리스틱으로 동작하게 한다',
+  ],
+  scenarios: [
+    '채용공고(JD) 전문과 내 경력·스킬을 붙여넣는다',
+    '적합도 점수·보유/부족 역량·갭 가이드를 확인한다',
+    'JD 맞춤 이력서 불릿을 복사하고 진단을 저장·비교한다',
+  ],
+  screens: [
+    { name: '입력', desc: 'JD 전문 + 내 경력·스킬 붙여넣기' },
+    { name: '적합도 진단', desc: '적합도 게이지 + 보유/부족 역량 칩 + 갭 카드' },
+    { name: '맞춤 문장 · 키워드', desc: 'JD 반영 성과 불릿 + ATS 키워드 추천 + 복사' },
+    { name: '진단 보관', desc: '여러 공고 진단을 저장·비교' },
+  ],
+  pipelineDetail: [
+    { step: '입력 수집', detail: 'JD 전문과 내 경력·스킬을 구조화한다.' },
+    { step: '대조 분석 · 스키마 강제', detail: '요구 역량 추출과 보유/부족 매칭 지침을 system 프롬프트로 지시하고 JSON 스키마를 고정한다.' },
+    { step: 'GPT 호출(json_object)', detail: 'json_object로 적합도·역량분리·갭·맞춤불릿·키워드를 한 번에 수신한다.' },
+    { step: '검증 · 폴백', detail: '누락 시 JD·이력서 토큰의 교집합/차집합 휴리스틱으로 안전 진단한다.' },
+    { step: '시각화', detail: '적합도 게이지 + 보유/부족 칩 + 갭 카드로 표시한다.' },
+    { step: '활용', detail: '맞춤 문장 클립보드 복사, 진단을 localStorage(jd.diags)에 저장·비교한다.' },
+  ],
+  promptNotes: [
+    'JD에서 요구 역량 키워드를 추출하고 내 역량과 매칭하도록 system 프롬프트로 지시한다.',
+    '적합도·보유/부족 역량·갭·맞춤 불릿·ATS 키워드를 하나의 json_object 스키마로 강제해 받는다.',
+    'API 키가 없으면 토큰 교집합/차집합으로 점수와 역량을 근사 계산한다.',
+  ],
+  architecture:
+    '백엔드 없는 React SPA. 공통 레이아웃·5탭은 src/ui.tsx, 진단 기능은 src/App.tsx가 담당한다. ' +
+    'OpenAI 호출은 src/lib/ai.ts, 맞춤 문장 복사는 Clipboard API로 처리하며, 진단 이력은 브라우저 localStorage에 저장한다.',
+  structure: [
+    { path: 'src/App.tsx', desc: '적합도 진단·역량 갭·맞춤 문장 + 메타(M)' },
+    { path: 'src/ui.tsx', desc: '공통 레이아웃·5탭·UI 헬퍼' },
+    { path: 'src/lib/ai.ts', desc: 'OpenAI chat 헬퍼(ask/hasKey)' },
+    { path: 'src/index.css', desc: '테마·게이지/칩 스타일' },
+  ],
+  dataModel: [
+    { name: 'Diag', desc: '적합도·보유/부족 역량·갭·맞춤불릿·키워드 진단 결과' },
+    { name: 'Gap', desc: '부족 역량과 채우는 방법' },
+    { name: 'Saved', desc: '저장한 공고 진단. localStorage "jd.diags"' },
+  ],
+  deploy:
+    'Vite 빌드(base: "./") 후 GitHub Actions(deploy.yml)가 main push 시 GitHub Pages로 자동 배포 → aebonlee.github.io/project13/',
   stack: ['React 18', 'TypeScript', 'Vite', 'OpenAI GPT', 'Clipboard API', 'localStorage'],
   links: [
     { label: '워크넷', url: 'https://www.work.go.kr' },
